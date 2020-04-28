@@ -71,13 +71,22 @@ const Statistics = ({ info, totalFeedback, good, bad }) => {
   }
   return (
     <div>
-      <p>good: {info[0]}</p>
-      <p>neutral: {info[1]}</p>
-      <p>bad: {info[2]}</p>
-
+      <Statistic text="good" value={info[0]} />
+      <Statistic text="neutral" value={info[1]} />
+      <Statistic text="bad" value={info[2]} />
       <All all={totalFeedback} />
       <Average all={totalFeedback} good={good} bad={bad} />
       <Positive good={good} all={totalFeedback} />
+    </div>
+  );
+};
+
+const Statistic = ({ value, text }) => {
+  return (
+    <div>
+      <p>
+        {text}: {value}
+      </p>
     </div>
   );
 };
