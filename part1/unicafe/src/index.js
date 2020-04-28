@@ -66,7 +66,9 @@ const Average = ({ all, good, bad }) => {
 };
 
 const Statistics = ({ info, totalFeedback, good, bad }) => {
-  console.log(totalFeedback);
+  if (totalFeedback == 0) {
+    return <div>No feedback given</div>;
+  }
   return (
     <div>
       <p>good: {info[0]}</p>
