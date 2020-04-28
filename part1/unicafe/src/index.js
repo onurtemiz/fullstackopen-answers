@@ -43,51 +43,52 @@ const App = () => {
 
 const Positive = ({ good, all }) => {
   return (
-    <div>
-      <p>positive {(good / all) * 100} %</p>
-    </div>
+    <tr>
+      <td>positive</td>
+      <td> {(good / all) * 100} %</td>
+    </tr>
   );
 };
 
 const All = ({ all }) => {
   return (
-    <div>
-      <p>all {all}</p>
-    </div>
+    <tr>
+      <td>all</td> <td>{all}</td>
+    </tr>
   );
 };
 
 const Average = ({ all, good, bad }) => {
   return (
-    <div>
-      <p>average {(good - bad) / all}</p>
-    </div>
+    <tr>
+      <td>average</td> <td>{(good - bad) / all}</td>
+    </tr>
   );
 };
 
 const Statistics = ({ info, totalFeedback, good, bad }) => {
-  if (totalFeedback == 0) {
+  if (totalFeedback === 0) {
     return <div>No feedback given</div>;
   }
   return (
     <div>
-      <Statistic text="good" value={info[0]} />
-      <Statistic text="neutral" value={info[1]} />
-      <Statistic text="bad" value={info[2]} />
-      <All all={totalFeedback} />
-      <Average all={totalFeedback} good={good} bad={bad} />
-      <Positive good={good} all={totalFeedback} />
+      <table>
+        <Statistic text="good" value={info[0]} />
+        <Statistic text="neutral" value={info[1]} />
+        <Statistic text="bad" value={info[2]} />
+        <All all={totalFeedback} />
+        <Average all={totalFeedback} good={good} bad={bad} />
+        <Positive good={good} all={totalFeedback} />
+      </table>
     </div>
   );
 };
 
 const Statistic = ({ value, text }) => {
   return (
-    <div>
-      <p>
-        {text}: {value}
-      </p>
-    </div>
+    <tr>
+      <td>{text}:</td> <td>{value}</td>
+    </tr>
   );
 };
 
