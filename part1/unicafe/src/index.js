@@ -53,7 +53,8 @@ const Positive = ({ good, all }) => {
 const All = ({ all }) => {
   return (
     <tr>
-      <td>all</td> <td>{all}</td>
+      <td>all</td>
+      <td>{all}</td>
     </tr>
   );
 };
@@ -61,7 +62,8 @@ const All = ({ all }) => {
 const Average = ({ all, good, bad }) => {
   return (
     <tr>
-      <td>average</td> <td>{(good - bad) / all}</td>
+      <td>average</td>
+      <td>{(good - bad) / all}</td>
     </tr>
   );
 };
@@ -73,12 +75,14 @@ const Statistics = ({ info, totalFeedback, good, bad }) => {
   return (
     <div>
       <table>
-        <Statistic text="good" value={info[0]} />
-        <Statistic text="neutral" value={info[1]} />
-        <Statistic text="bad" value={info[2]} />
-        <All all={totalFeedback} />
-        <Average all={totalFeedback} good={good} bad={bad} />
-        <Positive good={good} all={totalFeedback} />
+        <tbody>
+          <Statistic text="good" value={info[0]} />
+          <Statistic text="neutral" value={info[1]} />
+          <Statistic text="bad" value={info[2]} />
+          <All all={totalFeedback} />
+          <Average all={totalFeedback} good={good} bad={bad} />
+          <Positive good={good} all={totalFeedback} />
+        </tbody>
       </table>
     </div>
   );
@@ -87,7 +91,8 @@ const Statistics = ({ info, totalFeedback, good, bad }) => {
 const Statistic = ({ value, text }) => {
   return (
     <tr>
-      <td>{text}:</td> <td>{value}</td>
+      <td>{text}:</td>
+      <td>{value}</td>
     </tr>
   );
 };
