@@ -1,6 +1,7 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import services from "./util/services";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,7 +11,7 @@ const App = () => {
   const title = "Phonebook";
 
   const hook = () => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    services.getAll().then((response) => {
       setPersons(response.data);
     });
   };
@@ -34,17 +35,45 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
+
     if (persons.find((p) => p.name === newName)) {
-      window.alert(`${newName} is already added to phonebook`);
-      return;
+      if (
+        window.confirm(
+          `${newName} is already on the list, replace the old one with a new one?`
+        )
+      ) {
+        const p = persons.find((p) => p.name === newName);
+        const newP = { ...p, number: newPhone };
+        services.update(p.id, newP).then((response) => {
+          setPersons(
+            persons.map((person) =>
+              person.id !== p.id ? person : response.data
+            )
+          );
+        });
+      }
+    } else {
+      const personOBJ = {
+        name: newName,
+        number: newPhone,
+      };
+
+      services.create(personOBJ).then((response) => {
+        personOBJ.id = response.data.id;
+        setPersons(persons.concat(personOBJ));
+      });
     }
-    const personOBJ = {
-      name: newName,
-      number: newPhone,
-    };
+
     setNewName("");
     setNewPhone("");
-    setPersons(persons.concat(personOBJ));
+  };
+
+  const deleteButtonHandler = (personOBJ) => {
+    if (window.confirm(`Delete ${personOBJ.name}`)) {
+      services.deletePerson(personOBJ).then((response) => {
+        setPersons(persons.filter((person) => person.id !== personOBJ.id));
+      });
+    }
   };
 
   return (
@@ -63,7 +92,11 @@ const App = () => {
         handlePhoneChange={handlePhoneChange}
       />
       <h2>Numbers</h2>
-      <Numbers persons={filteredPerson} keyword={searchKeyword} />
+      <Numbers
+        persons={filteredPerson}
+        keyword={searchKeyword}
+        handler={deleteButtonHandler}
+      />
     </div>
   );
 };
@@ -99,15 +132,24 @@ const Form = ({
   );
 };
 
-const Numbers = ({ persons, keyword }) => {
+const Numbers = ({ persons, keyword, handler }) => {
   return (
     <div>
       {persons.map((person) => (
         <p key={person.name}>
-          {person.name} {person.number}
+          {person.name} {person.number}{" "}
+          <DelButton handler={handler} person={person} />
         </p>
       ))}
     </div>
+  );
+};
+
+const DelButton = ({ handler, person }) => {
+  return (
+    <>
+      <button onClick={() => handler(person)}>delete</button>
+    </>
   );
 };
 
