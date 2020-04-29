@@ -2,13 +2,31 @@ import "./App.css";
 import React, { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", phone: "040-123456" },
+    { name: "Ada Lovelace", phone: "39-44-5323523" },
+    { name: "Dan Abramov", phone: "12-43-234345" },
+    { name: "Mary Poppendieck", phone: "39-23-6423122" },
+  ]);
   const [newName, setNewName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
   const title = "Phonebook";
 
   const handlePersonChange = (event) => {
     setNewName(event.target.value);
   };
+  const handlePhoneChange = (event) => {
+    setNewPhone(event.target.value);
+  };
+
+  const handleKeywordChange = (event) => {
+    setSearchKeyword(event.target.value);
+  };
+
+  const filteredPerson = persons.filter((person) =>
+    person.name.toUpperCase().includes(searchKeyword.toUpperCase())
+  );
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -18,29 +36,57 @@ const App = () => {
     }
     const personOBJ = {
       name: newName,
+      phone: newPhone,
     };
     setNewName("");
+    setNewPhone("");
     setPersons(persons.concat(personOBJ));
   };
 
   return (
     <div>
       <Title title={title} />
+      <Search
+        searchKeyword={searchKeyword}
+        handleKeywordChange={handleKeywordChange}
+      />
+      <h2>Add a new</h2>
       <Form
         addPerson={addPerson}
         handlePersonChange={handlePersonChange}
         newName={newName}
+        newPhone={newPhone}
+        handlePhoneChange={handlePhoneChange}
       />
-      <Numbers persons={persons} />
+      <h2>Numbers</h2>
+      <Numbers persons={filteredPerson} keyword={searchKeyword} />
     </div>
   );
 };
 
-const Form = ({ addPerson, newName, handlePersonChange }) => {
+const Search = ({ searchKeyword, handleKeywordChange }) => {
+  return (
+    <div>
+      filter shown with{" "}
+      <input value={searchKeyword} onChange={handleKeywordChange} />
+    </div>
+  );
+};
+
+const Form = ({
+  addPerson,
+  newName,
+  handlePersonChange,
+  newPhone,
+  handlePhoneChange,
+}) => {
   return (
     <form onSubmit={addPerson}>
       <div>
         name: <input value={newName} onChange={handlePersonChange} />
+      </div>
+      <div>
+        phone: <input value={newPhone} onChange={handlePhoneChange} />
       </div>
       <div>
         <button type="submit">add</button>
@@ -49,12 +95,13 @@ const Form = ({ addPerson, newName, handlePersonChange }) => {
   );
 };
 
-const Numbers = ({ persons }) => {
+const Numbers = ({ persons, keyword }) => {
   return (
     <div>
-      <h2>Numbers</h2>
       {persons.map((person) => (
-        <p key={person.name}>{person.name}</p>
+        <p key={person.name}>
+          {person.name} {person.phone}
+        </p>
       ))}
     </div>
   );
