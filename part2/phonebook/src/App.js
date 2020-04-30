@@ -9,6 +9,7 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const title = "Phonebook";
 
   const hook = () => {
@@ -75,15 +76,27 @@ const App = () => {
 
   const deleteButtonHandler = (personOBJ) => {
     if (window.confirm(`Delete ${personOBJ.name}`)) {
-      services.deletePerson(personOBJ).then((response) => {
-        setPersons(persons.filter((person) => person.id !== personOBJ.id));
-      });
+      services
+        .deletePerson(personOBJ)
+        .then((response) => {
+          setPersons(persons.filter((person) => person.id !== personOBJ.id));
+        })
+        .catch((error) => {
+          setErrorMessage(
+            `Person ${personOBJ.name} was already removed from the server`
+          );
+          setTimeout(() => {
+            setErrorMessage("");
+          }, 5000);
+          setPersons(persons.filter((person) => person.id !== personOBJ.id));
+        });
     }
   };
 
   return (
     <div>
       <Title title={title} />
+      <ErrorMessage message={errorMessage} />
       <SucessMessage message={successMessage} />
       <Search
         searchKeyword={searchKeyword}
@@ -107,24 +120,35 @@ const App = () => {
   );
 };
 
+const ErrorMessage = ({ message }) => {
+  if (message.length === 0) {
+    return null;
+  }
+
+  const errorStyle = {
+    color: "red",
+    border: "solid 3px red",
+    backgroundColor: "grey",
+    fontSize: 20,
+  };
+
+  return (
+    <div className="error" style={errorStyle}>
+      {message}
+    </div>
+  );
+};
+
 const SucessMessage = ({ message }) => {
   if (message.length === 0) {
-    console.log("null");
-    console.log("message", message);
     return null;
   } else {
-    console.log("not null");
-    console.log("message", message);
     const sucessStyle = {
       color: "green",
       border: "solid 3px green",
       backgroundColor: "grey",
       fontSize: 20,
     };
-    // let k;
-    // if (message.length > 0) {
-    //   k = sucessStyle;
-    // }
 
     return (
       <div className="sucess" style={sucessStyle}>
