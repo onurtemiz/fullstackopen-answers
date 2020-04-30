@@ -8,6 +8,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const title = "Phonebook";
 
   const hook = () => {
@@ -61,6 +62,10 @@ const App = () => {
       services.create(personOBJ).then((response) => {
         personOBJ.id = response.data.id;
         setPersons(persons.concat(personOBJ));
+        setSuccessMessage(`Added ${personOBJ.name}`);
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 5000);
       });
     }
 
@@ -79,6 +84,7 @@ const App = () => {
   return (
     <div>
       <Title title={title} />
+      <SucessMessage message={successMessage} />
       <Search
         searchKeyword={searchKeyword}
         handleKeywordChange={handleKeywordChange}
@@ -99,6 +105,33 @@ const App = () => {
       />
     </div>
   );
+};
+
+const SucessMessage = ({ message }) => {
+  if (message.length === 0) {
+    console.log("null");
+    console.log("message", message);
+    return null;
+  } else {
+    console.log("not null");
+    console.log("message", message);
+    const sucessStyle = {
+      color: "green",
+      border: "solid 3px green",
+      backgroundColor: "grey",
+      fontSize: 20,
+    };
+    // let k;
+    // if (message.length > 0) {
+    //   k = sucessStyle;
+    // }
+
+    return (
+      <div className="sucess" style={sucessStyle}>
+        {message}
+      </div>
+    );
+  }
 };
 
 const Search = ({ searchKeyword, handleKeywordChange }) => {
