@@ -44,7 +44,7 @@ blogsRouter.post("/", (request, response, next) => {
 });
 
 // CHANGE ONE BLOG
-blogsRouter.put("/:id", (request, response, next) => {
+blogsRouter.put("/:id", async (request, response, next) => {
   const { body } = request;
   newBlog = {
     title: body.title,
@@ -53,13 +53,10 @@ blogsRouter.put("/:id", (request, response, next) => {
     likes: body.likes,
   };
 
-  Blog.findByIdAndUpdate(request.params.id, newBlog, {
+  blog = await Blog.findByIdAndUpdate(request.params.id, newBlog, {
     new: true,
-  })
-    .then((blog) => {
-      response.json(blog.toJSON());
-    })
-    .catch((error) => next(error));
+  });
+  response.json(blog.toJSON());
 });
 
 module.exports = blogsRouter;

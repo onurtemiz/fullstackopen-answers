@@ -74,3 +74,31 @@ test("title must be present", async () => {
 
   await api.post("/api/blogs").send(newBlog).expect(400);
 });
+
+test("update a single item", async () => {
+  const newBlog = new Blog({
+    title: "nelerlerelre",
+    author: "burasicokonemli",
+    url: "huehuehuehueuhe",
+  });
+
+  const resBlog = await api.post("/api/blogs").send(newBlog);
+
+  resBlog.body.likes = 20;
+
+  finalBlog = await api.put(`/api/blogs/${resBlog.body.id}`).send(resBlog.body);
+  expect(resBlog.body.likes).toEqual(finalBlog.body.likes);
+});
+
+test("delete an item", async () => {
+  const dbAtStart = await helper.blogsInDb();
+  const blogAtStart = dbAtStart[0];
+
+  await api.delete(`/api/blogs/${blogAtStart.id}`).expect(204);
+
+  const dbAtEnd = await helper.blogsInDb();
+
+  expect(dbAtEnd).toHaveLength(dbAtStart.length - 1);
+  const titles = dbAtEnd.map((blog) => blog.title);
+  expect(titles).not.toContain(blogAtStart.title);
+});
