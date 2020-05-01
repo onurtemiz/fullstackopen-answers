@@ -27,14 +27,9 @@ blogsRouter.delete("/:id", (request, response) => {
 
 // POST ONE BLOG
 blogsRouter.post("/", (request, response, next) => {
-  if (
-    !request.body.title ||
-    !request.body.author ||
-    !request.body.url ||
-    !request.body.likes
-  ) {
+  if (!request.body.title || !request.body.url) {
     return response.status(400).json({
-      error: "content is missing",
+      error: "title or url is missing",
     });
   }
 
