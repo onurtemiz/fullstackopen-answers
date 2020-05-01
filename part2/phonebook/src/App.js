@@ -60,14 +60,22 @@ const App = () => {
         number: newPhone,
       };
 
-      services.create(personOBJ).then((response) => {
-        personOBJ.id = response.data.id;
-        setPersons(persons.concat(personOBJ));
-        setSuccessMessage(`Added ${personOBJ.name}`);
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 5000);
-      });
+      services
+        .create(personOBJ)
+        .then((response) => {
+          personOBJ.id = response.data.id;
+          setPersons(persons.concat(personOBJ));
+          setSuccessMessage(`Added ${personOBJ.name}`);
+          setTimeout(() => {
+            setSuccessMessage("");
+          }, 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error);
+        });
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
     }
 
     setNewName("");
