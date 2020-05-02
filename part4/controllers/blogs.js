@@ -1,11 +1,12 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 // GET ALL BLOGS
-blogsRouter.get("/", (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs.map((blog) => blog.toJSON()));
-  });
+blogsRouter.get("/", async (request, response) => {
+  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
+  // response.json(blogs);
+  response.json(blogs.map((b) => b.toJSON()));
 });
 
 // GET ONE BLOG
@@ -26,21 +27,28 @@ blogsRouter.delete("/:id", (request, response) => {
 });
 
 // POST ONE BLOG
-blogsRouter.post("/", (request, response, next) => {
-  if (!request.body.title || !request.body.url) {
+blogsRouter.post("/", async (request, response, next) => {
+  if (!request.body.title || !request.body.url || !request.body.userId) {
     return response.status(400).json({
       error: "title or url is missing",
     });
   }
 
-  const blog = new Blog(request.body);
+  const body = request.body;
+  const user = await User.findById(body.userId);
 
-  blog
-    .save()
-    .then((result) => {
-      response.status(201).json(result.toJSON());
-    })
-    .catch((error) => next(error));
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+    user: user._id,
+  });
+
+  const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+  response.status(201).json(savedBlog.toJSON());
 });
 
 // CHANGE ONE BLOG
