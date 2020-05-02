@@ -5,6 +5,19 @@ const bcrypt = require("bcrypt");
 // POST ONE PERSON
 usersRouter.post("/", async (request, response) => {
   const body = request.body;
+  const isThereOne = await User.find({ username: body.username });
+  if (
+    !body.username ||
+    !body.password ||
+    body.username.length <= 3 ||
+    body.password <= 3 ||
+    isThereOne
+  ) {
+    return response.status(400).json({
+      error:
+        "your username and password must be at least three length and a unique username is needed",
+    });
+  }
   const roundTime = 10;
   const passwordHash = await bcrypt.hash(body.password, roundTime);
 

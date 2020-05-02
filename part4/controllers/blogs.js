@@ -1,6 +1,7 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 // GET ALL BLOGS
 blogsRouter.get("/", async (request, response) => {
@@ -18,7 +19,20 @@ blogsRouter.get("/:id", (request, response, next) => {
 });
 
 // DELETE ONE BLOG
-blogsRouter.delete("/:id", (request, response) => {
+blogsRouter.delete("/:id", async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!request.token || !decodedToken.id) {
+    return response.status(401)({
+      error: "token missing or invalid",
+    });
+  }
+  const blog = await Blog.findById(request.params.id);
+  if (!blog.user.toString() === decodedToken.id.toString()) {
+    return response.status(401)({
+      error: "only the creater can remove this blog.",
+    });
+  }
+
   Blog.findByIdAndRemove(request.params.id)
     .then(() => {
       response.status(204).end();
@@ -28,14 +42,19 @@ blogsRouter.delete("/:id", (request, response) => {
 
 // POST ONE BLOG
 blogsRouter.post("/", async (request, response, next) => {
-  if (!request.body.title || !request.body.url || !request.body.userId) {
+  if (!request.body.title || !request.body.url) {
     return response.status(400).json({
       error: "title or url is missing",
     });
   }
-
   const body = request.body;
-  const user = await User.findById(body.userId);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({
+      error: "token missing or invalid",
+    });
+  }
+  const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     title: body.title,
