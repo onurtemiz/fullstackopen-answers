@@ -27,8 +27,8 @@ blogsRouter.delete("/:id", async (request, response) => {
     });
   }
   const blog = await Blog.findById(request.params.id);
-  if (!blog.user.toString() === decodedToken.id.toString()) {
-    return response.status(401)({
+  if (blog.user.toString() !== decodedToken.id.toString()) {
+    return response.status(401).json({
       error: "only the creater can remove this blog.",
     });
   }

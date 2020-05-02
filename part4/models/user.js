@@ -5,7 +5,7 @@ mongoose.set("useFindAndModify", false);
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true , required: true, minlength: 3},
   name: String,
-  passwordHash: {type: String, required: true, minlength: 3},
+  passwordHash: {type: String, required: true},
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,

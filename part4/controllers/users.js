@@ -10,8 +10,8 @@ usersRouter.post("/", async (request, response) => {
     !body.username ||
     !body.password ||
     body.username.length <= 3 ||
-    body.password <= 3 ||
-    isThereOne
+    body.password.length <= 3 ||
+    isThereOne.length !== 0
   ) {
     return response.status(400).json({
       error:
@@ -28,7 +28,7 @@ usersRouter.post("/", async (request, response) => {
   });
 
   savedUser = await newUser.save();
-  response.json(savedUser);
+  response.status(201).json(savedUser);
 });
 
 usersRouter.get("/", async (request, response) => {
