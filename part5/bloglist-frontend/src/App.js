@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
-
+import CreateBlogForm from "./components/CreateBlogForm";
+import LoginForm from "./components/LoginForm";
+import Togglable from "./components/Togglable";
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSucessMessage] = useState("");
   const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
-
+  const loginFormRef = React.createRef();
+  const blogFormRef = React.createRef();
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
@@ -30,34 +27,29 @@ const App = () => {
   const login = () => {
     return (
       <div>
-        <h2>Log in to Application</h2>
-        <ErrorMessage errorMessage={errorMessage} />
-        <Login
-          setErrorMessage={setErrorMessage}
-          errorMessage={errorMessage}
-          setUser={setUser}
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-        />
+        <Togglable buttonLabel="Login" ref={loginFormRef}>
+          <h2>Log in to Application</h2>
+          <ErrorMessage errorMessage={errorMessage} />
+          <LoginForm
+            setErrorMessage={setErrorMessage}
+            errorMessage={errorMessage}
+            setUser={setUser}
+            loginFormRef={loginFormRef}
+          />
+        </Togglable>
       </div>
     );
   };
-
   const createBlog = () => {
     return (
-      <CreateBlog
-        title={title}
-        setTitle={setTitle}
-        author={author}
-        setAuthor={setAuthor}
-        url={url}
-        setUrl={setUrl}
-        setBlogs={setBlogs}
-        blogs={blogs}
-        setSucessMessage={setSucessMessage}
-      />
+      <Togglable buttonLabel="Create Blog" ref={blogFormRef}>
+        <CreateBlogForm
+          setBlogs={setBlogs}
+          blogs={blogs}
+          setSucessMessage={setSucessMessage}
+          blogFormRef={blogFormRef}
+        />
+      </Togglable>
     );
   };
 
@@ -69,6 +61,8 @@ const App = () => {
   const logout = () => {
     return (
       <>
+        {user.username.charAt(0).toUpperCase() + user.username.slice(1)} logged
+        in
         <button onClick={handleLogout}>logout</button>
       </>
     );
@@ -80,23 +74,30 @@ const App = () => {
         <div>{login()}</div>
       ) : (
         <div>
-          <p>
-            {user.username.charAt(0).toUpperCase() + user.username.slice(1)}{" "}
-            logged in {logout()}
-          </p>{" "}
-          {createBlog()}
+          <p>{logout()}</p> {createBlog()}
         </div>
       )}
 
       <h2>blogs</h2>
       <SuccessMessage successMessage={successMessage} />
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <Blogs blogs={blogs} blogService={blogService} />
     </div>
   );
 };
 
+const Blogs = ({ blogs, blogService }) => {
+  return (
+    <div>
+      {blogs
+        .sort((a, b) => (a.likes > b.likes ? -1 : 1))
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} blogService={blogService} />
+        ))}
+    </div>
+  );
+};
+
+//OPTIMIZE: Success Message
 const SuccessMessage = ({ successMessage }) => {
   if (successMessage.length === 0) {
     return null;
@@ -116,6 +117,7 @@ const SuccessMessage = ({ successMessage }) => {
   );
 };
 
+//OPTIMIZE: Error Message
 const ErrorMessage = ({ errorMessage }) => {
   if (errorMessage.length === 0) {
     return null;
@@ -131,118 +133,6 @@ const ErrorMessage = ({ errorMessage }) => {
   return (
     <div className="error" style={errorStyle}>
       {errorMessage}
-    </div>
-  );
-};
-
-const CreateBlog = ({
-  title,
-  setTitle,
-  author,
-  setAuthor,
-  url,
-  setUrl,
-  setBlogs,
-  blogs,
-  setSucessMessage,
-}) => {
-  const handleCreateBlog = async (event) => {
-    event.preventDefault();
-    const blog = {
-      title,
-      author,
-      url,
-    };
-    const response = await blogService.create(blog);
-    setBlogs(blogs.concat(response));
-    setSucessMessage(`a new blog ${blog.title} by ${blog.author} added`);
-    setTimeout(() => {
-      setSucessMessage("");
-    }, 5000);
-  };
-
-  return (
-    <div>
-      <h2>Create new</h2>
-      <form onSubmit={handleCreateBlog}>
-        <div>
-          title:
-          <input
-            type="text"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author:
-          <input
-            type="text"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url:
-          <input
-            type="text"
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button type="create">Submit</button>
-      </form>
-    </div>
-  );
-};
-
-const Login = ({
-  setErrorMessage,
-  setUser,
-  username,
-  password,
-  setUsername,
-  setPassword,
-}) => {
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const user = await loginService.login({ username, password });
-      setUser(user);
-      window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
-      setUsername("");
-      setPassword("");
-      blogService.setToken(user.token);
-    } catch (e) {
-      setErrorMessage("Wrong username or password");
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 5000);
-    }
-  };
-
-  return (
-    <div>
-      <form onSubmit={handleLogin}>
-        <div>
-          username:
-          <input
-            type="text"
-            name="username"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password:
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
     </div>
   );
 };
