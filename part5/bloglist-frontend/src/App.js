@@ -63,7 +63,9 @@ const App = () => {
       <>
         {user.username.charAt(0).toUpperCase() + user.username.slice(1)} logged
         in
-        <button onClick={handleLogout}>logout</button>
+        <button onClick={handleLogout} id="logout">
+          logout
+        </button>
       </>
     );
   };

@@ -13,8 +13,13 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
       url,
     };
     const response = await blogService.create(blog);
-    blogFormRef.current.toggleVisibility();
+    if (blogFormRef.current) {
+      blogFormRef.current.toggleVisibility();
+    }
     setBlogs(blogs.concat(response));
+    setTitle("");
+    setAuthor("");
+    setUrl("");
     setSucessMessage(`a new blog ${blog.title} by ${blog.author} added`);
     setTimeout(() => {
       setSucessMessage("");
@@ -29,6 +34,7 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
           title:{" "}
           <input
             type="text"
+            id="titleInput"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
@@ -38,6 +44,7 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
           <input
             type="text"
             value={author}
+            id="authorInput"
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
@@ -46,10 +53,13 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
           <input
             type="text"
             value={url}
+            id="urlInput"
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button type="create">Submit</button>
+        <button type="create" id="create-button">
+          Submit
+        </button>
       </form>
     </div>
   );

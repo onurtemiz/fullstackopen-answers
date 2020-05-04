@@ -17,7 +17,7 @@ const Blog = ({ blog, blogService }) => {
     setVisible(!visible);
   };
 
-  const likeHandler = async () => {
+  const likeHandler = async (blog) => {
     const newObj = {
       user: blog.user.id,
       likes: likes + 1,
@@ -41,22 +41,33 @@ const Blog = ({ blog, blogService }) => {
 
   if (visible) {
     return (
-      <div style={blogStyle}>
+      <div style={blogStyle} className="blog">
         <p>
-          {blog.title} <button onClick={clickHandler}>hide</button>
+          {blog.title}{" "}
+          <button onClick={clickHandler} className="hide-blog">
+            hide
+          </button>
         </p>
         <p>{blog.url}</p>
-        <p>
-          likes {likes} <button onClick={likeHandler}>like</button>
+        <p className="likes">
+          likes {likes}{" "}
+          <button onClick={() => likeHandler(blog)} className="like-button">
+            like
+          </button>
         </p>
         <p>{blog.author}</p>
-        <button onClick={deleteHandler}>remove</button>
+        <button onClick={deleteHandler} className="delete-blog-button">
+          remove
+        </button>
       </div>
     );
   } else {
     return (
-      <div style={blogStyle}>
-        {blog.title} {blog.author} <button onClick={clickHandler}>view</button>
+      <div style={blogStyle} className="blog">
+        {blog.title} {blog.author}{" "}
+        <button onClick={clickHandler} className="view-blog">
+          view
+        </button>
       </div>
     );
   }
