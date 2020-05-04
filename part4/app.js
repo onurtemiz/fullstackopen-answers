@@ -29,6 +29,11 @@ app.use(express.json());
 app.use(middleware.requestLogger);
 app.use(middleware.tokenExtractor);
 
+if (process.env.NODE_ENV === "test") {
+  const resetRouter = require("./controllers/reset");
+  app.use("/api/reset", resetRouter);
+}
+
 app.use("/api/blogs", notesRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
