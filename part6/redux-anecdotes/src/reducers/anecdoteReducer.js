@@ -25,7 +25,6 @@ export const likeAnecdote = (id) => {
 };
 
 export const createAnecdote = (anecdote) => {
-  console.log("anecdote", anecdote);
   return {
     type: "CREATE_ANECDOTE",
     data: {
@@ -38,7 +37,7 @@ export const createAnecdote = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject);
 
-const reducer = (state = initialState, action) => {
+const anecdoteReducer = (state = initialState, action) => {
   switch (action.type) {
     case "LIKE":
       const oriObj = state.find((ane) => ane.id === action.data.id);
@@ -54,4 +53,4 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-export default reducer;
+export default anecdoteReducer;

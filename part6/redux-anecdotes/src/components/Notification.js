@@ -1,16 +1,17 @@
-import React from 'react'
+import React from "react";
+import { useSelector } from "react-redux";
 
 const Notification = () => {
+  const notification = useSelector((state) => state.notification);
+  console.log("notification.info", notification.info);
   const style = {
-    border: 'solid',
+    border: "solid",
     padding: 10,
-    borderWidth: 1
-  }
-  return (
-    <div style={style}>
-      render here notification...
-    </div>
-  )
-}
+    borderWidth: 1,
+    display: `${notification.info ? "" : "none"}`,
+  };
 
-export default Notification
+  return <div style={style}>{notification.info}</div>;
+};
+
+export default Notification;
