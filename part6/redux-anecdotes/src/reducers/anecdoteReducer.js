@@ -28,10 +28,17 @@ export const createAnecdote = (anecdote) => {
   return {
     type: "CREATE_ANECDOTE",
     data: {
-      content: anecdote,
-      id: getId(),
+      content: anecdote.content,
       votes: 0,
+      id: anecdote.id,
     },
+  };
+};
+
+export const initAnecdotes = (anecdotes) => {
+  return {
+    type: "INIT_ANECDOTES",
+    data: anecdotes,
   };
 };
 
@@ -48,6 +55,8 @@ const anecdoteReducer = (state = initialState, action) => {
       return state.map((ane) => (ane.id === action.data.id ? likedObj : ane));
     case "CREATE_ANECDOTE":
       return [...state, action.data];
+    case "INIT_ANECDOTES":
+      return action.data;
     default:
       return state;
   }
