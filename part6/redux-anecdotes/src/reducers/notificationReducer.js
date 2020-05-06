@@ -1,3 +1,5 @@
+import { useDispatch } from "react-redux";
+
 const asObject = (info) => {
   return {
     info: info,
@@ -8,7 +10,7 @@ const notificationReducer = (state = asObject, action) => {
   switch (action.type) {
     case "SHOW_NOTIFY":
       const newNot = {
-        info: `you voted '${action.anecdote}'`,
+        info: action.info,
       };
       state = newNot;
       return state;
@@ -21,10 +23,19 @@ const notificationReducer = (state = asObject, action) => {
   }
 };
 
-export const showNotify = (anecdote) => {
+export const setNotify = (notification, seconds) => {
+  return (dispatch) => {
+    dispatch(showNotify(notification));
+    window.setTimeout(() => {
+      dispatch(hideNotify());
+    }, seconds * 1000);
+  };
+};
+
+export const showNotify = (notification) => {
   return {
     type: "SHOW_NOTIFY",
-    anecdote: anecdote,
+    info: notification,
   };
 };
 

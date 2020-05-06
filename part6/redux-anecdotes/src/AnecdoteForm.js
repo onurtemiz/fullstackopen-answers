@@ -1,8 +1,7 @@
 import React from "react";
 import { createAnecdote } from "./reducers/anecdoteReducer.js";
 import { useDispatch } from "react-redux";
-import { showNotify, hideNotify } from "./reducers/notificationReducer";
-import anecdoteService from "./services/anecdotes";
+import { setNotify } from "./reducers/notificationReducer";
 
 const AnecdotesForm = () => {
   const dispatch = useDispatch();
@@ -11,10 +10,8 @@ const AnecdotesForm = () => {
     event.preventDefault();
     const ane = event.target.anecdote.value;
     event.target.anecdote.value = "";
-    const response = await anecdoteService.createNew(ane);
-    dispatch(createAnecdote(response));
-    dispatch(showNotify(ane));
-    window.setTimeout(() => dispatch(hideNotify()), 5000);
+    dispatch(createAnecdote(ane));
+    dispatch(setNotify(`you voted '${ane}'`, 10));
   };
 
   return (
