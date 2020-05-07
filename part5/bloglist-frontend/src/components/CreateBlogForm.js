@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import blogService from "../services/blogs";
+import React, { useState } from 'react';
+import blogService from '../services/blogs';
 
 const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
   const handleCreateBlog = async (event) => {
     event.preventDefault();
     const blog = {
@@ -17,12 +17,12 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
       blogFormRef.current.toggleVisibility();
     }
     setBlogs(blogs.concat(response));
-    setTitle("");
-    setAuthor("");
-    setUrl("");
+    setTitle('');
+    setAuthor('');
+    setUrl('');
     setSucessMessage(`a new blog ${blog.title} by ${blog.author} added`);
     setTimeout(() => {
-      setSucessMessage("");
+      setSucessMessage('');
     }, 5000);
   };
 
@@ -31,7 +31,7 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
       <h2>Create new</h2>
       <form onSubmit={handleCreateBlog}>
         <div>
-          title:{" "}
+          title:{' '}
           <input
             type="text"
             id="titleInput"
@@ -40,7 +40,7 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
           />
         </div>
         <div>
-          author:{" "}
+          author:{' '}
           <input
             type="text"
             value={author}
@@ -49,7 +49,7 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
           />
         </div>
         <div>
-          url:{" "}
+          url:{' '}
           <input
             type="text"
             value={url}

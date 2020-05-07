@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import blogService from "./services/blogs";
-import CreateBlogForm from "./components/CreateBlogForm";
-import LoginForm from "./components/LoginForm";
-import Togglable from "./components/Togglable";
+import React, { useState, useEffect } from 'react';
+import Blog from './components/Blog';
+import blogService from './services/blogs';
+import CreateBlogForm from './components/CreateBlogForm';
+import LoginForm from './components/LoginForm';
+import Togglable from './components/Togglable';
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSucessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSucessMessage] = useState('');
   const [user, setUser] = useState(null);
   const loginFormRef = React.createRef();
   const blogFormRef = React.createRef();
@@ -16,7 +16,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem("loggedBlogUser");
+    const loggedUserJson = window.localStorage.getItem('loggedBlogUser');
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
       setUser(user);
@@ -54,7 +54,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    window.localStorage.removeItem("loggedBlogUser");
+    window.localStorage.removeItem('loggedBlogUser');
     setUser(null);
   };
 
@@ -88,12 +88,28 @@ const App = () => {
 };
 
 const Blogs = ({ blogs, blogService }) => {
+  const likeHandler = async (blog, setLikes, likes) => {
+    const newObj = {
+      user: blog.user.id,
+      likes: likes + 1,
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+    };
+    await blogService.update(blog.id, newObj);
+    setLikes(likes + 1);
+  };
   return (
     <div>
       {blogs
         .sort((a, b) => (a.likes > b.likes ? -1 : 1))
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} blogService={blogService} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            blogService={blogService}
+            likeHandler={likeHandler}
+          />
         ))}
     </div>
   );
@@ -105,9 +121,9 @@ const SuccessMessage = ({ successMessage }) => {
     return null;
   }
   const successStyle = {
-    border: "3px solid green",
-    backgroundColor: "gainsboro",
-    color: "green",
+    border: '3px solid green',
+    backgroundColor: 'gainsboro',
+    color: 'green',
     fontSize: 20,
     padding: 10,
   };
@@ -125,9 +141,9 @@ const ErrorMessage = ({ errorMessage }) => {
     return null;
   }
   const errorStyle = {
-    border: "3px solid red",
-    backgroundColor: "gainsboro",
-    color: "red",
+    border: '3px solid red',
+    backgroundColor: 'gainsboro',
+    color: 'red',
     fontSize: 20,
     padding: 10,
   };
