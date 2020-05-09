@@ -58,6 +58,7 @@ export const deleteBlog = (blog) => {
     await blogService.remove(blog.id);
     dispatch({
       type: 'DELETE_BLOG',
+      data: blog,
     });
   };
 };

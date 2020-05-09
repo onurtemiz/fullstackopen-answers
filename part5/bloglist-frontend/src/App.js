@@ -1,145 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import Blog from './components/Blog';
+import React, { useEffect } from 'react';
 import blogService from './services/blogs';
 import CreateBlogForm from './components/CreateBlogForm';
-import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
+import Notification from './components/Notification';
+import Login from './components/Login';
+import Blogs from './components/Blogs';
+import Blog from './components/Blog';
+import Users from './components/Users';
+import User from './components/User';
+import NavBar from './components/NavBar';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllBlogs, updateBlog, likeBlog } from './reducers/blogReducer';
+import { getAllBlogs } from './reducers/blogReducer';
+import { setLoginUser } from './reducers/userReducer';
+import ReactDOM from 'react-dom';
+import { getUsers } from './reducers/usersReducer';
+
+import { Switch, Route } from 'react-router-dom';
+
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSucessMessage] = useState('');
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.user);
   const loginFormRef = React.createRef();
   const blogFormRef = React.createRef();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllBlogs());
   }, []);
+  useEffect(() => {
+    dispatch(getUsers());
+  }, []);
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedBlogUser');
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
-      setUser(user);
+      dispatch(setLoginUser(user));
       blogService.setToken(user.token);
     }
   }, []);
 
-  const login = () => {
-    return (
-      <div>
-        <Togglable buttonLabel="Login" ref={loginFormRef}>
-          <h2>Log in to Application</h2>
-          <ErrorMessage errorMessage={errorMessage} />
-          <LoginForm
-            setErrorMessage={setErrorMessage}
-            errorMessage={errorMessage}
-            setUser={setUser}
-            loginFormRef={loginFormRef}
-          />
-        </Togglable>
-      </div>
-    );
-  };
   const createBlog = () => {
     return (
       <Togglable buttonLabel="Create Blog" ref={blogFormRef}>
-        <CreateBlogForm
-          setSucessMessage={setSucessMessage}
-          blogFormRef={blogFormRef}
-        />
+        <CreateBlogForm blogFormRef={blogFormRef} />
       </Togglable>
     );
   };
 
-  const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogUser');
-    setUser(null);
-  };
-
-  const logout = () => {
-    return (
-      <>
-        {user.username.charAt(0).toUpperCase() + user.username.slice(1)} logged
-        in
-        <button onClick={handleLogout} id="logout">
-          logout
-        </button>
-      </>
-    );
-  };
-
   return (
     <div>
-      {user === null ? (
-        <div>{login()}</div>
-      ) : (
-        <div>
-          <p>{logout()}</p> {createBlog()}
-        </div>
-      )}
-
+      <NavBar loginFormRef={loginFormRef} />
       <h2>blogs</h2>
-      <SuccessMessage successMessage={successMessage} />
-      <Blogs />
-    </div>
-  );
-};
-
-const Blogs = () => {
-  const dispatch = useDispatch();
-  const blogs = useSelector((state) => state.blogs);
-  const likeHandler = async (blog) => {
-    dispatch(likeBlog(blog));
-  };
-  return (
-    <div>
-      {blogs
-        .sort((a, b) => (a.likes > b.likes ? -1 : 1))
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} likeHandler={likeHandler} />
-        ))}
-    </div>
-  );
-};
-
-//OPTIMIZE: Success Message
-const SuccessMessage = ({ successMessage }) => {
-  if (successMessage.length === 0) {
-    return null;
-  }
-  const successStyle = {
-    border: '3px solid green',
-    backgroundColor: 'gainsboro',
-    color: 'green',
-    fontSize: 20,
-    padding: 10,
-  };
-
-  return (
-    <div className="error" style={successStyle}>
-      {successMessage}
-    </div>
-  );
-};
-
-//OPTIMIZE: Error Message
-const ErrorMessage = ({ errorMessage }) => {
-  if (errorMessage.length === 0) {
-    return null;
-  }
-  const errorStyle = {
-    border: '3px solid red',
-    backgroundColor: 'gainsboro',
-    color: 'red',
-    fontSize: 20,
-    padding: 10,
-  };
-
-  return (
-    <div className="error" style={errorStyle}>
-      {errorMessage}
+      <Switch>
+        <Route path="/users/:id/">
+          <User />
+        </Route>
+        <Route path="/users">
+          <Users />
+        </Route>
+        <Route path="/blogs/:id">
+          <Blog />
+        </Route>
+        <Route path="/blogs">
+          <Blogs />
+        </Route>
+        <Route path="/">
+          {user !== null ? createBlog() : null}
+          <Notification />
+          <Blogs />
+        </Route>
+      </Switch>
     </div>
   );
 };

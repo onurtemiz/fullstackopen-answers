@@ -1,17 +1,23 @@
 /* eslint-disable linebreak-style */
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteBlog, changeBlogVis } from '../reducers/blogReducer';
-
-const Blog = ({ blog, likeHandler }) => {
+import { likeBlog } from '../reducers/blogReducer';
+import { useRouteMatch } from 'react-router-dom';
+const Blog = () => {
   const dispatch = useDispatch();
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+  const blogMatch = useRouteMatch('/blogs/:id');
+
+  console.log('blogMatch');
+
+  const blogs = useSelector((state) => state.blogs);
+  const blog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : null;
+  if (!blog) {
+    return null;
+  }
+
   const clickHandler = () => {
     dispatch(changeBlogVis(blog));
   };
@@ -25,37 +31,24 @@ const Blog = ({ blog, likeHandler }) => {
     return null;
   }
 
-  if (blog.visible) {
-    return (
-      <div style={blogStyle} className="blog">
-        <p>
-          {blog.title}{' '}
-          <button onClick={clickHandler} className="hide-blog">
-            hide
-          </button>
-        </p>
-        <p>{blog.url}</p>
-        <p className="likes">
-          likes {blog.likes}{' '}
-          <button onClick={() => likeHandler(blog)} className="like-button">
-            like
-          </button>
-        </p>
-        <p>{blog.author}</p>
-        <button onClick={deleteHandler} className="delete-blog-button">
-          remove
+  return (
+    <div className="blog">
+      <h2>{blog.title} </h2>
+      <a href={blog.url}>{blog.url}</a>
+      <p className="likes">
+        {blog.likes} likes
+        <button
+          onClick={() => dispatch(likeBlog(blog))}
+          className="like-button"
+        >
+          like
         </button>
-      </div>
-    );
-  } else {
-    return (
-      <div style={blogStyle} className="blog">
-        {blog.title} {blog.author}{' '}
-        <button onClick={clickHandler} className="view-blog">
-          view
-        </button>
-      </div>
-    );
-  }
+      </p>
+      <p>added by {blog.author}</p>
+      <button onClick={deleteHandler} className="delete-blog-button">
+        remove
+      </button>
+    </div>
+  );
 };
 export default Blog;

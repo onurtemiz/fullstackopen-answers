@@ -1,8 +1,8 @@
 import { useDispatch } from 'react-redux';
 import { createBlog } from '../reducers/blogReducer';
-import { reset } from 'redux-form';
+import { setNotify, hideNotify } from '../reducers/notificationReducer';
 import React from 'react';
-const CreateBlogForm = ({ setSucessMessage, blogFormRef }) => {
+const CreateBlogForm = ({ blogFormRef }) => {
   const dispatch = useDispatch();
   const handleCreateBlog = async (event) => {
     event.preventDefault();
@@ -16,9 +16,11 @@ const CreateBlogForm = ({ setSucessMessage, blogFormRef }) => {
       blogFormRef.current.toggleVisibility();
     }
     document.getElementById('new-blog-form').reset();
-    setSucessMessage(`a new blog ${blog.title} by ${blog.author} added`);
+    dispatch(
+      setNotify('successs', `a new blog ${blog.title} by ${blog.author} added`)
+    );
     setTimeout(() => {
-      setSucessMessage('');
+      dispatch(hideNotify());
     }, 5000);
   };
 
