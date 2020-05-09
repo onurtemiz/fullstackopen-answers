@@ -4,6 +4,7 @@ import Togglable from './Togglable';
 import Notification from './Notification';
 import LoginForm from './LoginForm';
 import { setLoginUser } from '../reducers/userReducer';
+import { Button } from 'react-bootstrap';
 
 const Login = ({ loginFormRef }) => {
   const user = useSelector((state) => state.user);
@@ -18,7 +19,6 @@ const Login = ({ loginFormRef }) => {
       <>
         <Togglable buttonLabel="Login" ref={loginFormRef}>
           <h2>Log in to Application</h2>
-          <Notification />
           <LoginForm loginFormRef={loginFormRef} />
         </Togglable>
       </>
@@ -30,9 +30,9 @@ const Login = ({ loginFormRef }) => {
       <>
         {user.username.charAt(0).toUpperCase() + user.username.slice(1)} logged
         in
-        <button onClick={handleLogout} id="logout">
+        <Button variant="danger" onClick={handleLogout} id="logout">
           logout
-        </button>
+        </Button>
       </>
     );
   };

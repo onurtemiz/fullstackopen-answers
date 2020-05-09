@@ -5,6 +5,7 @@ import { deleteBlog } from '../reducers/blogReducer';
 import { createComment } from '../reducers/commentsReducer';
 import { likeBlog } from '../reducers/blogReducer';
 import { useRouteMatch } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 import Comments from './Comments';
 const Blog = () => {
   const dispatch = useDispatch();
@@ -44,24 +45,31 @@ const Blog = () => {
       <a href={blog.url}>{blog.url}</a>
       <p className="likes">
         {blog.likes} likes
-        <button
+        <Button
+          variant="info"
           onClick={() => dispatch(likeBlog(blog))}
           className="like-button"
         >
           like
-        </button>
+        </Button>
       </p>
       <p>added by {blog.author}</p>
-      <button onClick={deleteHandler} className="delete-blog-button">
+      <Button
+        variant="danger"
+        onClick={deleteHandler}
+        className="delete-blog-button"
+      >
         remove
-      </button>
+      </Button>
       <div>
         <b>Comments</b>
         {user ? (
           <form onSubmit={handleComment} id="new-comment-form">
             <div>
               <input type="text" name="comment" />
-              <button type="submit">add comment</button>
+              <Button variant="secondary" type="submit">
+                add comment
+              </Button>
             </div>
           </form>
         ) : null}

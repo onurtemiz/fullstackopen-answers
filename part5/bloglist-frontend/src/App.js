@@ -50,7 +50,7 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <NavBar loginFormRef={loginFormRef} />
       <h2>blogs</h2>
       <Switch>
@@ -64,6 +64,7 @@ const App = () => {
           <Blog />
         </Route>
         <Route path="/blogs">
+          {user !== null ? createBlog() : null}
           <Blogs />
         </Route>
         <Route path="/">
