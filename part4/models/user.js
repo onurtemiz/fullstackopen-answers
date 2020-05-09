@@ -1,22 +1,28 @@
-const mongoose = require("mongoose");
-const uniqueler = require("mongoose-unique-validator");
-mongoose.set("useFindAndModify", false);
+const mongoose = require('mongoose');
+const uniqueler = require('mongoose-unique-validator');
+mongoose.set('useFindAndModify', false);
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true , required: true, minlength: 3},
+  username: { type: String, unique: true, required: true, minlength: 3 },
   name: String,
-  passwordHash: {type: String, required: true},
+  passwordHash: { type: String, required: true },
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Blog",
+      ref: 'Blog',
+    },
+  ],
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment',
     },
   ],
 });
 
 userSchema.set(uniqueler);
 
-userSchema.set("toJSON", {
+userSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     // eslint-disable-next-line no-underscore-dangle
     returnedObject.id = returnedObject._id.toString();
@@ -26,4 +32,4 @@ userSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);

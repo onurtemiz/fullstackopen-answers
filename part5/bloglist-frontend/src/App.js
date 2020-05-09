@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import blogService from './services/blogs';
+import commentsService from './services/comments';
 import CreateBlogForm from './components/CreateBlogForm';
 import Togglable from './components/Togglable';
 import Notification from './components/Notification';
-import Login from './components/Login';
 import Blogs from './components/Blogs';
 import Blog from './components/Blog';
 import Users from './components/Users';
@@ -12,9 +12,8 @@ import NavBar from './components/NavBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllBlogs } from './reducers/blogReducer';
 import { setLoginUser } from './reducers/userReducer';
-import ReactDOM from 'react-dom';
+import { getAllComments } from './reducers/commentsReducer';
 import { getUsers } from './reducers/usersReducer';
-
 import { Switch, Route } from 'react-router-dom';
 
 const App = () => {
@@ -28,6 +27,9 @@ const App = () => {
   useEffect(() => {
     dispatch(getUsers());
   }, []);
+  useEffect(() => {
+    dispatch(getAllComments());
+  }, []);
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem('loggedBlogUser');
@@ -35,6 +37,7 @@ const App = () => {
       const user = JSON.parse(loggedUserJson);
       dispatch(setLoginUser(user));
       blogService.setToken(user.token);
+      commentsService.setToken(user.token);
     }
   }, []);
 

@@ -1,25 +1,19 @@
 const mongoose = require('mongoose');
 mongoose.set('useFindAndModify', false);
 
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: { type: Number, default: 0 },
-  visible: { type: Boolean, default: false },
+const commentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment',
-    },
-  ],
+  blog: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog',
+  },
+  comment: String,
 });
 
-blogSchema.set('toJSON', {
+commentSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     // eslint-disable-next-line no-underscore-dangle
     returnedObject.id = returnedObject._id.toString();
@@ -27,5 +21,4 @@ blogSchema.set('toJSON', {
     delete returnedObject.__v;
   },
 });
-
-module.exports = mongoose.model('Blog', blogSchema);
+module.exports = mongoose.model('Comment', commentSchema);
