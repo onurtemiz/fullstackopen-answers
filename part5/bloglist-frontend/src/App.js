@@ -4,15 +4,17 @@ import blogService from './services/blogs';
 import CreateBlogForm from './components/CreateBlogForm';
 import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllBlogs, updateBlog } from './reducers/blogReducer';
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSucessMessage] = useState('');
   const [user, setUser] = useState(null);
   const loginFormRef = React.createRef();
   const blogFormRef = React.createRef();
+  const dispatch = useDispatch();
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    dispatch(getAllBlogs());
   }, []);
 
   useEffect(() => {
@@ -44,8 +46,6 @@ const App = () => {
     return (
       <Togglable buttonLabel="Create Blog" ref={blogFormRef}>
         <CreateBlogForm
-          setBlogs={setBlogs}
-          blogs={blogs}
           setSucessMessage={setSucessMessage}
           blogFormRef={blogFormRef}
         />
@@ -82,34 +82,34 @@ const App = () => {
 
       <h2>blogs</h2>
       <SuccessMessage successMessage={successMessage} />
-      <Blogs blogs={blogs} blogService={blogService} />
+      <Blogs />
     </div>
   );
 };
 
-const Blogs = ({ blogs, blogService }) => {
-  const likeHandler = async (blog, setLikes, likes) => {
+const Blogs = () => {
+  const dispatch = useDispatch();
+  const blogs = useSelector((state) => state.blogs);
+  const likeHandler = async (blog) => {
     const newObj = {
       user: blog.user.id,
-      likes: likes + 1,
+      likes: blog.likes + 1,
       title: blog.title,
       author: blog.author,
       url: blog.url,
     };
-    await blogService.update(blog.id, newObj);
-    setLikes(likes + 1);
+    const newBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+    };
+    dispatch(updateBlog(newObj));
   };
   return (
     <div>
       {blogs
         .sort((a, b) => (a.likes > b.likes ? -1 : 1))
         .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            blogService={blogService}
-            likeHandler={likeHandler}
-          />
+          <Blog key={blog.id} blog={blog} likeHandler={likeHandler} />
         ))}
     </div>
   );

@@ -1,11 +1,10 @@
 /* eslint-disable linebreak-style */
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { deleteBlog, changeBlogVis } from '../reducers/blogReducer';
 
-const Blog = ({ blog, blogService, likeHandler }) => {
-  const [visible, setVisible] = useState(false);
-  const [likes, setLikes] = useState(blog.likes);
-  const [alive, setAlive] = useState(true);
-
+const Blog = ({ blog, likeHandler }) => {
+  const dispatch = useDispatch();
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -14,20 +13,19 @@ const Blog = ({ blog, blogService, likeHandler }) => {
     marginBottom: 5,
   };
   const clickHandler = () => {
-    setVisible(!visible);
+    dispatch(changeBlogVis(blog));
   };
 
   const deleteHandler = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id);
-      setAlive(false);
+      dispatch(deleteBlog(blog));
     }
   };
-  if (!alive) {
+  if (!blog) {
     return null;
   }
 
-  if (visible) {
+  if (blog.visible) {
     return (
       <div style={blogStyle} className="blog">
         <p>
@@ -38,11 +36,8 @@ const Blog = ({ blog, blogService, likeHandler }) => {
         </p>
         <p>{blog.url}</p>
         <p className="likes">
-          likes {likes}{' '}
-          <button
-            onClick={() => likeHandler(blog, setLikes, likes)}
-            className="like-button"
-          >
+          likes {blog.likes}{' '}
+          <button onClick={() => likeHandler(blog)} className="like-button">
             like
           </button>
         </p>

@@ -1,25 +1,19 @@
-import React, { useState } from 'react';
-import blogService from '../services/blogs';
-
-const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
+import { useDispatch } from 'react-redux';
+import { createBlog } from '../reducers/blogReducer';
+import React from 'react';
+const CreateBlogForm = ({ setSucessMessage, blogFormRef }) => {
+  const dispatch = useDispatch();
   const handleCreateBlog = async (event) => {
     event.preventDefault();
     const blog = {
-      title,
-      author,
-      url,
+      title: event.target.title.value,
+      author: event.target.author.value,
+      url: event.target.url.value,
     };
-    const response = await blogService.create(blog);
+    dispatch(createBlog(blog));
     if (blogFormRef.current) {
       blogFormRef.current.toggleVisibility();
     }
-    setBlogs(blogs.concat(response));
-    setTitle('');
-    setAuthor('');
-    setUrl('');
     setSucessMessage(`a new blog ${blog.title} by ${blog.author} added`);
     setTimeout(() => {
       setSucessMessage('');
@@ -31,31 +25,13 @@ const CreateBlogForm = ({ setBlogs, blogs, setSucessMessage, blogFormRef }) => {
       <h2>Create new</h2>
       <form onSubmit={handleCreateBlog}>
         <div>
-          title:{' '}
-          <input
-            type="text"
-            id="titleInput"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+          title: <input type="text" name="title" id="titleInput" />
         </div>
         <div>
-          author:{' '}
-          <input
-            type="text"
-            value={author}
-            id="authorInput"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+          author: <input type="text" name="author" id="authorInput" />
         </div>
         <div>
-          url:{' '}
-          <input
-            type="text"
-            value={url}
-            id="urlInput"
-            onChange={({ target }) => setUrl(target.value)}
-          />
+          url: <input type="text" name="url" id="urlInput" />
         </div>
         <button type="create" id="create-button">
           Submit

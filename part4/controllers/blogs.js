@@ -1,17 +1,17 @@
-const blogsRouter = require("express").Router();
-const Blog = require("../models/blog");
-const User = require("../models/user");
-const jwt = require("jsonwebtoken");
+const blogsRouter = require('express').Router();
+const Blog = require('../models/blog');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 // GET ALL BLOGS
-blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
   // response.json(blogs);
   response.json(blogs.map((b) => b.toJSON()));
 });
 
 // GET ONE BLOG
-blogsRouter.get("/:id", (request, response, next) => {
+blogsRouter.get('/:id', (request, response, next) => {
   Blog.findById(request.params.id).then((blog) => {
     response.json(blog.toJSON());
   });
@@ -19,17 +19,17 @@ blogsRouter.get("/:id", (request, response, next) => {
 });
 
 // DELETE ONE BLOG
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete('/:id', async (request, response) => {
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
   if (!request.token || !decodedToken.id) {
     return response.status(401)({
-      error: "token missing or invalid",
+      error: 'token missing or invalid',
     });
   }
   const blog = await Blog.findById(request.params.id);
   if (blog.user.toString() !== decodedToken.id.toString()) {
     return response.status(401).json({
-      error: "only the creater can remove this blog.",
+      error: 'only the creater can remove this blog.',
     });
   }
 
@@ -41,17 +41,17 @@ blogsRouter.delete("/:id", async (request, response) => {
 });
 
 // POST ONE BLOG
-blogsRouter.post("/", async (request, response, next) => {
+blogsRouter.post('/', async (request, response, next) => {
   if (!request.body.title || !request.body.url) {
     return response.status(400).json({
-      error: "title or url is missing",
+      error: 'title or url is missing',
     });
   }
   const body = request.body;
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
   if (!request.token || !decodedToken.id) {
     return response.status(401).json({
-      error: "token missing or invalid",
+      error: 'token missing or invalid',
     });
   }
   const user = await User.findById(decodedToken.id);
@@ -61,6 +61,7 @@ blogsRouter.post("/", async (request, response, next) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
+    visible: body.alive,
     user: user._id,
   });
 
@@ -71,7 +72,7 @@ blogsRouter.post("/", async (request, response, next) => {
 });
 
 // CHANGE ONE BLOG
-blogsRouter.put("/:id", async (request, response, next) => {
+blogsRouter.put('/:id', async (request, response, next) => {
   const { body } = request;
   newBlog = {
     title: body.title,

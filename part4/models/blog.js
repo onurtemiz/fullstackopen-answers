@@ -1,18 +1,19 @@
-const mongoose = require("mongoose");
-mongoose.set("useFindAndModify", false);
+const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false);
 
 const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
   likes: { type: Number, default: 0 },
+  visible: { type: Boolean, default: false },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
 });
 
-blogSchema.set("toJSON", {
+blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     // eslint-disable-next-line no-underscore-dangle
     returnedObject.id = returnedObject._id.toString();
@@ -21,4 +22,4 @@ blogSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Blog", blogSchema);
+module.exports = mongoose.model('Blog', blogSchema);
