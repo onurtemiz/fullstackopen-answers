@@ -5,7 +5,7 @@ import CreateBlogForm from './components/CreateBlogForm';
 import LoginForm from './components/LoginForm';
 import Togglable from './components/Togglable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllBlogs, updateBlog } from './reducers/blogReducer';
+import { getAllBlogs, updateBlog, likeBlog } from './reducers/blogReducer';
 const App = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSucessMessage] = useState('');
@@ -91,18 +91,7 @@ const Blogs = () => {
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blogs);
   const likeHandler = async (blog) => {
-    const newObj = {
-      user: blog.user.id,
-      likes: blog.likes + 1,
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-    };
-    const newBlog = {
-      ...blog,
-      likes: blog.likes + 1,
-    };
-    dispatch(updateBlog(newObj));
+    dispatch(likeBlog(blog));
   };
   return (
     <div>

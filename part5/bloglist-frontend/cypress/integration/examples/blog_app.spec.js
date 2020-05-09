@@ -96,6 +96,8 @@ describe('Blog App', function () {
       .click()
       .get('.like-button')
       .click()
+      .get('.like-button')
+      .click()
       .get('.hide-blog')
       .click();
     cy.contains('title-1 author-1')

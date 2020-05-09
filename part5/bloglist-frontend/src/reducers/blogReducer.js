@@ -19,6 +19,13 @@ const blogReducer = (state = [], action) => {
         visible: !visToChange.visible,
       };
       return state.map((b) => (b.id === action.data.id ? newBlog : b));
+    case 'LIKE_BLOG':
+      const toLikedBlog = state.find((b) => b.id === action.data.id);
+      const likedBlog = {
+        ...toLikedBlog,
+        likes: toLikedBlog.likes + 1,
+      };
+      return state.map((b) => (b.id === action.data.id ? likedBlog : b));
     case 'GET_ALL_BLOGS':
       return action.data;
     default:
@@ -69,6 +76,16 @@ export const changeBlogVis = (blog) => {
   return (dispatch) => {
     dispatch({
       type: 'CHANGE_BLOG_VISIBILITY',
+      data: blog,
+    });
+  };
+};
+
+export const likeBlog = (blog) => {
+  return async (dispatch) => {
+    await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 });
+    dispatch({
+      type: 'LIKE_BLOG',
       data: blog,
     });
   };
